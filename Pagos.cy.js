@@ -1,0 +1,44 @@
+describe('Comprar producto en Demoblaze', () => {
+  it('Agregar un producto al carrito y comprarlo', () => {
+      // Visita la página principal
+      cy.visit('https://www.demoblaze.com/')
+
+      // Selecciona un producto, por ejemplo "Samsung galaxy s6"
+      cy.contains('Samsung galaxy s6').click()
+
+      // Espera a que se cargue la página del producto y agrega al carrito
+      cy.get('.btn-success').click()
+
+      // Acepta la alerta de confirmación
+      cy.on('window:alert', (alertText) => {
+          expect(alertText).to.equal('Product added')
+      })
+      cy.on('window:confirm', () => true)
+
+      // Ir al carrito
+      cy.get('#cartur').click()
+
+      // Espera a que se cargue la página del carrito
+      cy.get('body').should('contain', 'Total') // Verifica que la página del carrito se cargue correctamente
+
+      // Proceder a la compra
+      cy.contains('Place Order').click()
+
+      // Rellenar los campos del formulario de compra
+      cy.get('#name').type('Juan Perez')
+      cy.get('#country').type('México')
+      cy.get('#city').type('Ciudad de México')
+      cy.get('#card').type('8888 8888 8888 8888') // Corregido el selector del campo "Card"
+      cy.get('#month').type('12')
+      cy.get('#year').type('2024')
+
+      // Confirmar la compra
+      cy.contains('Purchase').click()
+
+      // Verificar la confirmación de la compra
+      cy.get('.sweet-alert').should('be.visible').and('contain', 'Thank you for your purchase!')
+
+      // Opcional: cerrar la alerta de confirmación
+      cy.get('.confirm').click()
+  })
+})
