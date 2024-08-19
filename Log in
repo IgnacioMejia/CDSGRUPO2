@@ -1,0 +1,65 @@
+describe('Pruebas de Log In en Demoblaze', () => {
+  const baseUrl = 'https://www.demoblaze.com/';
+
+  beforeEach(() => {
+    // Visita la página antes de cada prueba
+    cy.visit(baseUrl);
+  });
+
+  it('Inicia sesión correctamente con credenciales válidas', () => {
+    // Abre el modal de log in
+    cy.get('#login2').click();
+
+    // Asegúrate de que el modal esté completamente visible
+    cy.get('#logInModal').should('be.visible');
+
+    // Asignar directamente el valor al campo de usuario
+    cy.get('#loginusername')
+      .clear()
+      .invoke('val', 'cemoraest')
+      .should('have.value', 'cemoraest');
+
+    // Asignar directamente el valor al campo de contraseña
+    cy.get('#loginpassword')
+      .clear()
+      .invoke('val', '1234')
+      .should('have.value', '1234');
+
+    // Hace clic en el botón de log in
+    cy.get('button[onclick="logIn()"]').click();
+
+    // Verifica que el usuario haya iniciado sesión correctamente
+    cy.get('#nameofuser').should('contain.text', 'Welcome cemoraest');
+  });
+
+  it('Falla al iniciar sesión con credenciales inválidas', () => {
+    // Abre el modal de log in
+    cy.get('#login2').click();
+
+    // Asegúrate de que el modal esté completamente visible
+    cy.get('#logInModal').should('be.visible');
+
+    // Asignar directamente el valor al campo de usuario
+    cy.get('#loginusername')
+      .clear()
+      .invoke('val', 'cemoraest')
+      .should('have.value', 'cemoraest');
+
+    // Asignar directamente el valor al campo de contraseña
+    cy.get('#loginpassword')
+      .clear()
+      .invoke('val', '123')
+      .should('have.value', '123');
+
+    // Hace clic en el botón de log in
+    cy.get('button[onclick="logIn()"]').click();
+
+    // Verifica que aparezca un mensaje de error (alerta)
+    cy.on('window:alert', (str) => {
+      expect(str).to.equal('Wrong password.');
+    });
+
+    // Verifica que el usuario no haya iniciado sesión
+    cy.get('#nameofuser').should('not.exist');
+  });
+});
